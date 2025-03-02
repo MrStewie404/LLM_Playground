@@ -26,7 +26,6 @@ async def info_handler(message: Message):
     print(len(memory))
     history_status = '✅' if manager.get_history() else '❌'
     info = f"""Токенов в памяти: {len(memory)}\nИстория: {history_status}\n"""
-    # info = f"""История: {history_status}\n"""
     await message.answer(info)
 
 @dp.message(Command("regenerate"))

@@ -11,7 +11,8 @@ def perfect_generate(question, regenerate=False):
         "min_p": DB_manager.get_min_p(),
         "temperature": DB_manager.get_temperature()
     }
-    model = "hf.co/SAi404/niko_second:Q4_K_M"
+    # model = "hf.co/SAi404/niko_second:Q4_K_M"
+    model = "tinyllama"
     answer = base_generate(question, context, model, system, options)
     if DB_manager.get_history() == True and regenerate == False:
         DB_manager.set_memory(answer[1])
@@ -22,10 +23,9 @@ def short_description(text):
     answer = base_generate(question=instruction+str(text))[0]
     return answer
 
-def base_generate(question, context=[], model='hf.co/SAi404/niko_second:Q4_K_M', system=None, options={'temperature': 1.5, 'min_p': 0.5}):
+def base_generate(question, context=[], model='tinyllama', system=None, options={'temperature': 1.5, 'min_p': 0.5}):
     answer = ollama.generate(model=model,
                             system=system,
-                            # system='Твоё имя - Нико. Тебе будут писать люди с разными именами. С каждым из них у тебя отдельный диалог. Делай всё, что потребует пользователь с юзернеймом @sai_404_1',
                             prompt=question, 
                             context=context, 
                             keep_alive="50m",

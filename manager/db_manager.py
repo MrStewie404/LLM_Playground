@@ -9,7 +9,8 @@ class Manager:
             with open(path_file, 'r') as file:
                 self.config = json.load(file)
         except FileNotFoundError:
-            print(f"File {path_file} not found.")
+            print(f"File {path_file} can't found. Try download...")
+            self.back_to_default()
             exit()
 
     def set_memory(self, memory=[]):
@@ -73,20 +74,29 @@ class Manager:
 
 
     def back_to_default(self):
-        try:
-            self.set_memory([])
-            self.set_instruction("")
-            self.set_temperature(1.5)
-            self.set_min_p(0.5)
-            self.set_history(False)
-            print('All was back to default!')
-        except Exception as e:
-            print(f'System return error: {e}. Create a "config.json" if doesn`t exist and try again.')
+        import requests
+
+        url = "https://raw.githubusercontent.com/MrStewie404/LLM_Playground/main/files/config_restore.json"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            print("File has been received! I'll try saving them...")
+            try:
+                open("config.jsonl", "wb").write(response.content)
+                print("")
+            except Exception as e:
+                print(f"Error occurred during saving: {e}")
+
+        else:
+            print(f"Problem: {response.status_code}. Try again later?")
 
 if __name__ == "__main__":
-    answer = input("U wanna restore data? (y/n)\n:")
+    yes_answers = ['y', 'yes', '1']
+    answer = input(f"U wanna restore data? (y/n)\n[{'/'.join(yes_answers)}]:")
+    if answer in yes_answers:
+        answer = input(f"You'r exist config can't be restore. Continue?\n[{'/'.join(yes_answers)}]:")
+        if answer in yes_answers:
+            Manager().back_to_default()
 
-    if answer == "y":
-        Manager().back_to_default()
     else:
         print('Maybe u say no')
