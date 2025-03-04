@@ -4,18 +4,19 @@ DB_manager = db_manager.Manager()
 
 def perfect_generate(question, regenerate=False):
     context = []
-    if regenerate == True:
+    if regenerate == False:
         context = DB_manager.get_memory()
     system = DB_manager.get_instruction()
     options = {
         "min_p": DB_manager.get_min_p(),
         "temperature": DB_manager.get_temperature()
     }
-    # model = "hf.co/SAi404/niko_second:Q4_K_M"
-    model = "tinyllama"
+    # model = "tinyllama"
+    model = "hf.co/SAi404/niko_v0.5:Q4_K_M"
     answer = base_generate(question, context, model, system, options)
     if DB_manager.get_history() == True and regenerate == False:
-        DB_manager.set_memory(answer[1])
+        print(len(context), len(answer[1]))
+        DB_manager.set_memory(context + answer[1])
     return answer[0]
 
 def short_description(text):
@@ -23,7 +24,7 @@ def short_description(text):
     answer = base_generate(question=instruction+str(text))[0]
     return answer
 
-def base_generate(question, context=[], model='tinyllama', system=None, options={'temperature': 1.5, 'min_p': 0.5}):
+def base_generate(question, context=[], model='hf.co/SAi404/niko_v0.5:Q4_K_M', system=None, options={'temperature': 1.5, 'min_p': 0.5}):
     answer = ollama.generate(model=model,
                             system=system,
                             prompt=question, 
